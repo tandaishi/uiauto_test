@@ -21,6 +21,13 @@ CHROME_REC_DIRS = {
     'remote-chrome-1': '/shared/chrome1/rec',
     'remote-chrome-2': '/shared/chrome2/rec',
 }
+# CDP 的 Host 检查只认 IP/localhost（反 DNS-rebinding），hostname 直连会被 500 拒绝。
+# jenkins-node 镜像用 socat 把 remote-chrome 的 CDP 转发到本机固定端口：
+# remote-chrome-1 -> 127.0.0.1:9223，remote-chrome-2 -> 127.0.0.1:9224
+CHROME_LOCAL_PORTS = {
+    'remote-chrome-1': 9223,
+    'remote-chrome-2': 9224,
+}
 REC_CLEANUP_DAYS = 7   # 共享卷里 mp4 保留天数
 REC_STOP_TIMEOUT = 60  # 等 ffmpeg 收尾的最长秒数
 
@@ -110,9 +117,10 @@ def browser(request):
         pool = BrowserPool()
         res = pool.acquire_browser()  # 没有空闲浏览器时会每 10s 重试直到有
         _current_chrome_host = res['host']
+        local_port = CHROME_LOCAL_PORTS.get(res['host'], res['port'])
         co = (
             ChromiumOptions()
-            .set_address(f"{res['host']}:{res['port']}")
+            .set_address(f'127.0.0.1:{local_port}')
             .headless(False)
             .set_argument('--window-size', '1920,1080')
         )
