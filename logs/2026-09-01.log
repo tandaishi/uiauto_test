@@ -1,0 +1,8 @@
+2026-09-01 19:43:39.339 | INFO     | pages.login_page:login:20 - xiaohong登录
+2026-09-01 19:43:44.932 | INFO     | test_student_login:test_student_login:19 - 点击查看欢迎语
+2026-09-01 19:43:44.933 | INFO     | pages.login_page:get_welcome_text:34 - 获取欢迎语文本
+2026-09-01 19:43:50.226 | INFO     | test_student_login:test_student_login:22 - welcome text: welcome student xiaohong !
+2026-09-01 19:43:50.363 | INFO     | pages.login_page:login:20 - tan登录
+2026-09-01 19:43:55.835 | INFO     | test_teacher_login:test_teacher_login:20 - 点击查看欢迎语
+2026-09-01 19:43:55.836 | INFO     | pages.login_page:get_welcome_text:34 - 获取欢迎语文本
+2026-09-01 19:44:01.109 | INFO     | test_teacher_login:test_teacher_login:23 - welcome text: welcome teacher tan !
