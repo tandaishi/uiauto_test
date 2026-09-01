@@ -6,3 +6,11 @@
 2026-09-01 19:43:55.835 | INFO     | test_teacher_login:test_teacher_login:20 - 点击查看欢迎语
 2026-09-01 19:43:55.836 | INFO     | pages.login_page:get_welcome_text:34 - 获取欢迎语文本
 2026-09-01 19:44:01.109 | INFO     | test_teacher_login:test_teacher_login:23 - welcome text: welcome teacher tan !
+2026-09-01 20:53:51.612 | INFO     | pages.login_page:login:23 - xiaohong登录
+2026-09-01 20:53:57.232 | INFO     | test_student_login:test_student_login:19 - 点击查看欢迎语
+2026-09-01 20:53:57.233 | INFO     | pages.login_page:get_welcome_text:37 - 获取欢迎语文本
+2026-09-01 20:54:02.521 | INFO     | test_student_login:test_student_login:22 - welcome text: welcome student xiaohong !
+2026-09-01 20:54:02.674 | INFO     | pages.login_page:login:23 - tan登录
+2026-09-01 20:54:08.202 | INFO     | test_teacher_login:test_teacher_login:20 - 点击查看欢迎语
+2026-09-01 20:54:08.208 | INFO     | pages.login_page:get_welcome_text:37 - 获取欢迎语文本
+2026-09-01 20:54:13.502 | INFO     | test_teacher_login:test_teacher_login:23 - welcome text: welcome teacher tan !

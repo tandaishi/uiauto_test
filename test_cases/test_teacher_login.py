@@ -13,9 +13,9 @@ def account():
     pool.release_account_by_username(acc['username'])
 
 
-def test_teacher_login(browser, domin_url, account):
+def test_teacher_login(browser, account):
     """测试函数只关心业务"""
-    page = LoginPage(browser, domin_url)
+    page = LoginPage(browser)
     button_text = page.login(account['username'], account['password'])
     logger.info(button_text)
     assert '点击查看欢迎语' == button_text

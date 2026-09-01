@@ -1,0 +1,3 @@
+# 本地调试模式（pytest --local）
+DOMIN_URL=http://localhost:1000
+COUCHDB_URL=http://admin:waf914@127.0.0.1:1005

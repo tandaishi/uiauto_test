@@ -1,0 +1,3 @@
+# 远程模式（容器内 / vnet，jenkins node 跑 job 时使用）
+DOMIN_URL=http://demoPage:80
+COUCHDB_URL=http://admin:waf914@couchdb:5984

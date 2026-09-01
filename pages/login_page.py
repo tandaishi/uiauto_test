@@ -1,19 +1,22 @@
+import os
+
 from DrissionPage.errors import WaitTimeoutError
 from DrissionPage import Chromium
 from core.logger import logger
+
 class LoginPage:
     """登录页 Page Object，封装登录和欢迎页操作。
 
     用法：
-        page = LoginPage(browser, domin_url)
+        page = LoginPage(browser)
         page.login('tan', 'tan123')
         text = page.get_welcome_text()
     """
 
-    def __init__(self, browser:Chromium, domin_url):
+    def __init__(self, browser: Chromium):
         self.browser = browser
         self.tab = browser.latest_tab
-        self.domin_url = domin_url
+        self.domin_url = os.environ['DOMIN_URL']
 
     def login(self, username, password):
         """打开登录页并提交登录"""

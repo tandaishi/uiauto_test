@@ -13,8 +13,8 @@ def account():
     pool.release_account_by_username(acc['username'])
 
 
-def test_student_login(browser, domin_url, account):
-    page = LoginPage(browser, domin_url)
+def test_student_login(browser, account):
+    page = LoginPage(browser)
     button_text = page.login(account['username'], account['password'])
     logger.info(button_text)
     assert '点击查看欢迎语' == button_text

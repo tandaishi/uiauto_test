@@ -1,4 +1,5 @@
 import pytest
+from dotenv import load_dotenv
 
 from DrissionPage import Chromium, ChromiumOptions
 from DrissionPage.common import Settings
@@ -6,8 +7,6 @@ from DrissionPage.common import Settings
 from core.res_pool import BrowserPool
 
 LOCAL_BROWSER_PATH = r'C:\papp\uc\chrome.exe'
-LOCAL_DOMIN_URL = 'http://localhost:1000'
-REMOTE_DOMIN_URL = 'http://host.docker.internal:1000'
 
 
 def pytest_addoption(parser):
@@ -18,6 +17,12 @@ def pytest_addoption(parser):
         help='本地调试模式：使用本地浏览器，跳过资源池申请',
     )
 
+
+def pytest_configure(config):
+    """按 --local 加载对应的 env 文件（此时参数已解析）"""
+    env_file = '.local_env' if config.getoption('--local') else '.remote_env'
+    if not load_dotenv(env_file):
+        raise SystemExit(f'缺少环境配置文件: {env_file}')
 
 
 @pytest.fixture(scope='session')
@@ -58,11 +63,3 @@ def browser(request):
             yield browser
         finally:
             pool.release_browser(res['host'], res['port'])
-
-
-@pytest.fixture(scope='session')
-def domin_url(request):
-    """被测系统地址：--local 用本地，否则用远程"""
-    if request.config.getoption('--local'):
-        return LOCAL_DOMIN_URL
-    return REMOTE_DOMIN_URL

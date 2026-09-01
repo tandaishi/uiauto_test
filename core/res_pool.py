@@ -1,13 +1,16 @@
+import os
+import time
+from uuid import uuid4
+
 import couchdb3
 from couchdb3.exceptions import ConflictError
-from uuid import uuid4
-import time
 from core.logger import logger
 
 class AccountPool:
     """CouchDB 账号池：insert / acquire / release"""
 
-    def __init__(self, url="http://admin:waf914@127.0.0.1:1005", dbname="accounts"):
+    def __init__(self, url=None, dbname="accounts"):
+        url = url or os.environ.get('COUCHDB_URL', 'http://admin:waf914@127.0.0.1:1005')
         self.client = couchdb3.Server(url)
         self.db = (
             self.client.get(dbname)
@@ -69,7 +72,8 @@ class AccountPool:
 class BrowserPool:
     """CouchDB 浏览器池：host+port 唯一，insert / acquire / release"""
 
-    def __init__(self, url="http://admin:waf914@127.0.0.1:1005", dbname="browsers"):
+    def __init__(self, url=None, dbname="browsers"):
+        url = url or os.environ.get('COUCHDB_URL', 'http://admin:waf914@127.0.0.1:1005')
         self.client = couchdb3.Server(url)
         self.db = (
             self.client.get(dbname)
@@ -140,7 +144,7 @@ if __name__ == '__main__':
 
     browser_pool = BrowserPool()
     init_browsers = [
-        {'host':'localhost','port':'1010'},
-        {'host':'localhost','port':'1011'}
+        {'host':'remote-chrome-1','port':'9223'},
+        {'host':'remote-chrome-2','port':'9223'}
     ]
     browser_pool.seed(init_browsers)

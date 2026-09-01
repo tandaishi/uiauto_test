@@ -7,4 +7,5 @@ dependencies = [
     "drissionpage>=4.1.1.4",
     "loguru>=0.7.3",
     "pytest>=9.1.1",
+    "python-dotenv>=1.2.3",
 ]
