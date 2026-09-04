@@ -130,6 +130,80 @@ class BrowserPool:
             self.insert(browser['host'], browser['port'])
 
 
+
+class AndroidPool:
+    """CouchDB 安卓设备池：insert / acquire / release
+
+    记录字段：
+        devicename:   'xxx.xxx.xxx.xxx:xxxx'   设备地址，全池唯一，作为释放依据
+        appiumserver: 'http://xxx.xxx.x.xx:xxxx' Appium 服务地址
+        is_locked:    'N' / 'Y'                是否被占用
+    释放占用（release_android）和释放设备（remove_android）都以 devicename 为准。
+    """
+
+    def __init__(self, url=None, dbname="android_devices"):
+        url = url or os.environ.get('COUCHDB_URL', 'http://admin:waf914@127.0.0.1:1005')
+        self.client = couchdb3.Server(url)
+        self.db = (
+            self.client.get(dbname)
+            if dbname in self.client.all_dbs()
+            else self.client.create(dbname)
+        )
+
+    def insert(self, devicename, appiumserver):
+        """插入设备记录，devicename 已存在则跳过"""
+        exists = self.db.find(selector={"devicename": devicename})
+        if exists["docs"]:
+            return
+        doc = {
+            '_id': str(uuid4()),
+            'devicename': devicename,
+            'appiumserver': appiumserver,
+            'is_locked': 'N',
+        }
+        self.db.save(doc)
+
+    def acquire_android(self, wait=10):
+        """申请一台空闲设备并锁定，返回 {'devicename': ..., 'appiumserver': ...}。
+
+        全部被占用时每 wait 秒重试（默认 10s），直到有设备释放才返回。
+        并发申请时靠 _rev 冲突（ConflictError）兜底，不会重复拿到同一台设备。
+        """
+        while True:
+            docs = self.db.find(
+                selector={"is_locked": "N"},
+                limit=1,
+            )
+            if not docs["docs"]:
+                logger.info('no available android device')
+                time.sleep(wait)
+                continue
+            doc = docs["docs"][0]
+            doc["is_locked"] = 'Y'
+            try:
+                self.db.save(doc)
+            except ConflictError:
+                # 并发申请时被别的进程抢先锁定，重新找一台
+                continue
+            return {"devicename": doc["devicename"], "appiumserver": doc["appiumserver"]}
+
+    def release_android(self, devicename):
+        """释放占用：把 devicename 对应记录的 is_locked 置回 'N'，归还池中"""
+        docs = self.db.find(selector={"devicename": devicename})
+        for doc in docs["docs"]:
+            doc["is_locked"] = 'N'
+            self.db.save(doc)
+
+    def remove_android(self, devicename):
+        """释放设备：删除 devicename 对应的整条记录，设备下线不再入池"""
+        docs = self.db.find(selector={"devicename": devicename})
+        for doc in docs["docs"]:
+            self.db.delete(doc)
+
+    def seed(self, devices):
+        """批量初始化设备，每个元素为 {'devicename': ..., 'appiumserver': ...}"""
+        for device in devices:
+            self.insert(device['devicename'], device['appiumserver'])
 if __name__ == '__main__':
     # account_pool = AccountPool()
     # init_accounts = [

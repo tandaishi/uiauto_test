@@ -11,9 +11,12 @@ from dotenv import load_dotenv
 from DrissionPage import Chromium, ChromiumOptions
 from DrissionPage.common import Settings
 
-from core.res_pool import BrowserPool
+from core.android_driver import Android
+from core.res_pool import AndroidPool, BrowserPool
 
 LOCAL_BROWSER_PATH = r'C:\papp\uc\chrome.exe'
+LOCAL_DEVICE_NAME = '192.168.137.219:46643'
+LOCAL_APPIUM_SERVER = 'http://localhost:4723'
 
 # ---- 录屏：remote-chrome 容器内 ffmpeg 抓取 :99，mp4 经共享卷回到 agent ----
 # key: 浏览器池里的 host；value: 该容器在 jenkins-node 上的共享卷路径
@@ -84,6 +87,41 @@ def pytest_configure(config):
     env_file = '.local_env' if config.getoption('--local') else '.remote_env'
     if not load_dotenv(env_file):
         raise SystemExit(f'缺少环境配置文件: {env_file}')
+
+
+
+@pytest.fixture(scope='session')
+def android(request):
+    """全局单例 Android（Appium driver）。
+
+    非 --local（默认）：从资源池申请远程安卓设备，会话结束后 quit driver 并释放回池；
+    --local：直接用本地 LOCAL_DEVICE_NAME + LOCAL_APPIUM_SERVER，不碰资源池。
+    只有测试用例声明了 android 参数才会创建，不需要的用例不受影响。
+    """
+    local = request.config.getoption('--local')
+
+    if local:
+        device = Android(LOCAL_DEVICE_NAME, LOCAL_APPIUM_SERVER)
+        try:
+            yield device
+        finally:
+            device.quit()
+        return
+
+    pool = AndroidPool()
+    res = pool.acquire_android()  # 没有空闲设备时每 10s 重试直到有
+    try:
+        device = Android(res['devicename'], res['appiumserver'])
+    except Exception:
+        pool.release_android(res['devicename'])  # 锁到了设备但连接失败也要归还，避免设备被锁死
+        raise
+    try:
+        yield device
+    finally:
+        try:
+            device.quit()  # 结束 Appium 会话，归还前不留孤儿 session
+        finally:
+            pool.release_android(res['devicename'])
 
 
 @pytest.fixture(scope='session')
