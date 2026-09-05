@@ -3,7 +3,7 @@ from views.login_view import LoginView
 
 from core.res_pool import AccountPool
 from core.logger import logger
-from time import sleep
+
 
 @pytest.fixture
 def account():
@@ -24,6 +24,6 @@ def test_app_student_login(android, account):
 
     greet = view.get_greet_content().text
     logger.info(f'欢迎语：{greet}')
-    sleep(5)
+
     assert account['username'] in greet
     assert 'student' in greet
