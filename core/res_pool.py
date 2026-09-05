@@ -216,9 +216,16 @@ if __name__ == '__main__':
     # ]
     # account_pool.seed(init_accounts)
 
-    browser_pool = BrowserPool()
-    init_browsers = [
-        {'host':'remote-chrome-1','port':'9223'},
-        {'host':'remote-chrome-2','port':'9223'}
+    # browser_pool = BrowserPool()
+    # init_browsers = [
+    #     {'host':'remote-chrome-1','port':'9223'},
+    #     {'host':'remote-chrome-2','port':'9223'}
+    # ]
+    # browser_pool.seed(init_browsers)
+    android_pool = AndroidPool()
+    init_android_devices = [
+        # vnet 内部端点：jenkins agent（jenkins-node 容器）在 compose 网络里直接可达；
+        # devicename 同时是 adb 连接地址（adb connect remote-android:5555）
+        {'devicename': 'remote-android:5555', 'appiumserver': 'http://remote-android:4723'}
     ]
-    browser_pool.seed(init_browsers)
+    android_pool.seed(init_android_devices)

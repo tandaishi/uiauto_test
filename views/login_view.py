@@ -20,6 +20,7 @@ class LoginView:
 
     def __init__(self, driver: WebDriver):
         self.driver = driver
+        
 
     def _by_resource_id(self, widget: str, res_id: str):
         """按 resource-id 定位元素（widget: EditText / Button / TextView）"""
@@ -46,6 +47,7 @@ class LoginView:
     def get_greet_content(self):
         """点开欢迎语并返回 tv_welcome 元素（调用方取 .text）"""
         logger.info('获取欢迎语')
+        
         self._by_resource_id('Button', 'btn_show_welcome').click()
         return self._by_resource_id('TextView', 'tv_welcome')
         
