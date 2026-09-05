@@ -2,10 +2,13 @@
 
 from appium.webdriver.common.appiumby import AppiumBy
 from appium.webdriver.webdriver import WebDriver
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 from core.logger import logger
 
 _APP_PACKAGE = 'com.demo.app'
+_ELEMENT_TIMEOUT = 30  # 模拟器运行慢时，单次找元素/等元素可点的超时上限（秒）
 
 
 class LoginView:
@@ -20,34 +23,25 @@ class LoginView:
 
     def __init__(self, driver: WebDriver):
         self.driver = driver
-        
-
-    def _by_resource_id(self, widget: str, res_id: str):
-        """按 resource-id 定位元素（widget: EditText / Button / TextView）"""
-        return self.driver.find_element(
-            by=AppiumBy.XPATH,
-            value=f'//android.widget.{widget}[@resource-id="{_APP_PACKAGE}:id/{res_id}"]',
-        )
 
     def login(self, username: str, password: str):
         """把 app 切到前台、输入账号密码并提交登录"""
         logger.info(f'{username} 登录')
         self.driver.activate_app(_APP_PACKAGE)
 
-        username_box = self._by_resource_id('EditText', 'et_username')
+        username_box = WebDriverWait(self.driver, _ELEMENT_TIMEOUT).until(EC.presence_of_element_located((AppiumBy.XPATH, '//android.widget.EditText[@resource-id="com.demo.app:id/et_username"]')))
         username_box.clear()
         username_box.send_keys(username)
 
-        password_box = self._by_resource_id('EditText', 'et_password')
+        password_box = WebDriverWait(self.driver, _ELEMENT_TIMEOUT).until(EC.presence_of_element_located((AppiumBy.XPATH, '//android.widget.EditText[@resource-id="com.demo.app:id/et_password"]')))
         password_box.clear()
         password_box.send_keys(password)
 
-        self._by_resource_id('Button', 'btn_login').click()
+        WebDriverWait(self.driver, _ELEMENT_TIMEOUT).until(EC.element_to_be_clickable((AppiumBy.XPATH, '//android.widget.Button[@resource-id="com.demo.app:id/btn_login"]'))).click()
 
     def get_greet_content(self):
         """点开欢迎语并返回 tv_welcome 元素（调用方取 .text）"""
         logger.info('获取欢迎语')
-        
-        self._by_resource_id('Button', 'btn_show_welcome').click()
-        return self._by_resource_id('TextView', 'tv_welcome')
-        
+
+        WebDriverWait(self.driver, _ELEMENT_TIMEOUT).until(EC.element_to_be_clickable((AppiumBy.XPATH, '//android.widget.Button[@resource-id="com.demo.app:id/btn_show_welcome"]'))).click()
+        return WebDriverWait(self.driver, _ELEMENT_TIMEOUT).until(EC.presence_of_element_located((AppiumBy.XPATH, '//android.widget.TextView[@resource-id="com.demo.app:id/tv_welcome"]')))
