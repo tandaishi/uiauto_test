@@ -36,7 +36,7 @@ CHROME_LOCAL_PORTS = {
 }
 REC_CLEANUP_DAYS = 7   # 共享卷里 mp4 保留天数
 REC_STOP_TIMEOUT = 60  # 等 ffmpeg 收尾的最长秒数
-REC_TAIL_SECONDS = 5   # 用例结束后多录的秒数：末尾画面（最后一步操作的结果/动画收尾）完整入镜
+REC_TAIL_SECONDS = 3   # 用例结束后多录的秒数：末尾画面（最后一步操作的结果/动画收尾）完整入镜
 
 # ---- 录屏：android（guest 自带 screenrecord，conftest 经 adb 直连驱动）----
 # 模拟器 headless 运行、镜像无 ffmpeg，录制由 guest 内 MediaCodec 完成；
